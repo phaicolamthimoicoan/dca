@@ -1,0 +1,28 @@
+{
+  "name": "dca",
+  "version": "0.1.0",
+  "description": "idk",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phaicolamthimoicoan/dca.git"
+  },
+  "keywords": [
+    "dca",
+    "discord",
+    "chatbot"
+  ],
+  "author": "Citnut",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/phaicolamthimoicoan/dca/issues"
+  },
+  "homepage": "https://github.com/phaicolamthimoicoan/dca#readme",
+  "dependencies": {
+    "discord.js": "^14.15.3"
+  }
+}
