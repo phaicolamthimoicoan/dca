@@ -6,7 +6,7 @@ import DefaultClientOptions from "../default/clientOptions.js";
 export default class Client extends DefaultClient {
   /**
    * 
-   * @param {typeof DefaultClientOptions} options 
+   * @param {DefaultClientOptions} options 
    */
   constructor(options = {}) {
     super(Object.assign(DefaultClientOptions, options));
