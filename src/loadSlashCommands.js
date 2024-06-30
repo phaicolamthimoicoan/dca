@@ -1,17 +1,21 @@
 'use strict';
-import commandsCtx from "./struc/command.js";
+import commandsCtx from "./strurc/command.js";
 /**
  * 
  * @param {Array<{config:commandsCtx, execute(data: import("discord.js").Interaction, args?: any)=>void}>} commands 
- * @param {{onLoadFunc?: boolean, onLoadFuncName: string|"onLoad", onLoadFuncArgs?:any}} options
+ * @param {{
+ * onLoad?: {funcName: string|"onLoad", extraArgs?: any},
+ * onInteraction?: {funcName: string|"onInteraction"}
+ * }} options
  * @returns {(that: import("./models/client.js"))=>void}
  */
 export default function (commands, options = {}) {
-  if (options.onLoadFunc && !options.onLoadFuncName) options.onLoadFuncName = "onLoad";
+  if (options.onLoad && !options.onLoad.funcName) options.onLoad = { funcName: "onLoad" };
+  if (options.onInteraction && !options.onInteraction.funcName) options.onInteraction = { funcName: "onInteraction" };
   return (that) => {
-    /**
-     * @type {Array<commandsCtx>}
-     */
+    that.commands = new Map();
+    if (options.onInteraction) that.onInteraction = new Map();
+    /** @type {Array<commandsCtx>}*/
     let commandsLoaded = [];
     let missingName = 0;
     for (const once of commands) {
@@ -27,17 +31,22 @@ export default function (commands, options = {}) {
         console.log(` \x1b[31m[error]\x1b[0m command ${once.config.name} missing description`);
         continue
       };
-      if (options.onLoadFunc && once[options.onLoadFuncName]) {
-        if (typeof once[options.onLoadFuncName] == "function") {
+      if (options.onLoad && once[options.onLoad.funcName]) {
+        if (typeof once[options.onLoad.funcName] == "function") {
           try {
-            options.onLoadFuncArgs ? once[options.onLoadFuncName](options.onLoadFuncArgs) : once[options.onLoadFuncName]()
+            options.onLoad.extraArgs ? once[options.onLoad.funcName](options.onLoad.extraArgs) : once[options.onLoad.funcName]()
           } catch { console.log }
         } else {
-          console.log(` \x1b[33m[warn]\x1b[0m [command: ${once.config.name}] typeof ${options.onLoadFuncName} is not a function!`)
+          console.log(` \x1b[33m[warn]\x1b[0m [command: ${once.config.name}] typeof ${options.onLoad.funcName} is not a function!`)
         }
       };
       commandsLoaded.push(Object.assign(JSON.parse(JSON.stringify(commandsCtx)), once.config));
       that.commands.set(once.config.name, once.execute);
+      if (options.onInteraction && once[options.onInteraction.funcName]) {
+        (typeof once[options.onInteraction.funcName] == "function")
+          ? that.onInteraction.set(once.config.name, once[options.onInteraction.funcName])
+          : console.log(` \x1b[33m[warn]\x1b[0m [command: ${once.config.name}] typeof ${options.onInteraction.funcName} is not a function!`);
+      };
     };
     missingName != 0 ? console.log(` \x1b[31m[error]\x1b[0m ${missingName} command(s) missing name`) : "";
     that.application.commands.set(commandsLoaded);

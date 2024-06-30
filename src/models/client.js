@@ -1,19 +1,15 @@
 'use strict';
 
-import { Client as DefaultClient, Events } from "discord.js";
+import { Client, Events } from "discord.js";
 import DefaultClientOptions from "../default/clientOptions.js";
 
-export default class Client extends DefaultClient {
+export default class extends Client {
   /**
    * 
    * @param {DefaultClientOptions} options 
    */
   constructor(options = {}) {
     super(Object.assign(DefaultClientOptions, options));
-    /**
-     * @type {Map<string, execute(import("discord.js").Interaction) =>void>}
-     */
-    this.commands = new Map()
   };
   /**
    * 
